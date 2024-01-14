@@ -168,30 +168,22 @@ def eval_performance(data_loader, rpn_results, demo=True, category='car', eval_m
         if bad_bbox:
             continue
 
-        if TABLE_NUM == 1 or TABLE_NUM == 2:
-            load_ii = ii
-            if search_for_file:
-                for load_ii in range(len(rpn_results)):
-                    if same_filename(rpn_results[load_ii]['file_name'], img_path[0]): 
-                        break
-            else:
-                if not same_filename(rpn_results[load_ii]['file_name'], img_path[0]):
-                    print('error, skip')
-                    continue
-            
-            rpn_input_box = []
-            for box in input_bbox:
-                box, iou = find_max_iou(rpn_results[load_ii]['bbox'], box.cpu().numpy())
-                RPN_PREDICTION.append(iou)
-                rpn_input_box.append(box.astype(int))
-        elif TABLE_NUM == 3:
-            rpn_input_box = []
-            for box in input_bbox:
-                img_name_sep = str(img_path[0]).split('/')
-                img_name = '/home/BLC/dataset/pig/' + '/'.join(img_name_sep[-2:])
-                box, iou = find_max_iou(rpn_results[img_name]['bbox'], box.cpu().numpy())
-                RPN_PREDICTION.append(iou)
-                rpn_input_box.append(box.astype(int))
+        
+        load_ii = ii
+        if search_for_file:
+            for load_ii in range(len(rpn_results)):
+                if same_filename(rpn_results[load_ii]['file_name'], img_path[0]): 
+                    break
+        else:
+            if not same_filename(rpn_results[load_ii]['file_name'], img_path[0]):
+                print('error, skip')
+                continue
+        
+        rpn_input_box = []
+        for box in input_bbox:
+            box, iou = find_max_iou(rpn_results[load_ii]['bbox'], box.cpu().numpy())
+            RPN_PREDICTION.append(iou)
+            rpn_input_box.append(box.astype(int))
 
         rpn_input_box = torch.tensor(np.stack(rpn_input_box))
 
